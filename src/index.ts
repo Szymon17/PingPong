@@ -14,22 +14,26 @@ const ballSize = 10;
 
 const Board = new GameBoard(clientWidth, clientHeight);
 const playerPaddle = new UserPaddle(Board.canvas, paddleWidth, paddleHeight);
-const BotPaddle = new AiPaddle(Board.canvas, paddleWidth, paddleHeight);
+const BotPaddle = new AiPaddle(Board.canvas, paddleWidth, paddleHeight, 10);
 const GameBall = new Ball(Board.canvas, ballSize);
+
+const getPaddleInformations = (): paddlesInformations => {
+  return {
+    paddleWidth,
+    paddleHeight,
+    playerPaddlePossition: { x: 30, y: playerPaddle.paddleY },
+    aiPaddlePossition: { x: Board.canvas.width - 30, y: BotPaddle.paddleY },
+  };
+};
 
 const animate = () => {
   Board.renderCanvas();
   playerPaddle.drawPaddle(Board.ctx, Board.cursorY);
-  BotPaddle.drawPaddle(Board.ctx);
+  BotPaddle.drawPaddle(Board.ctx, GameBall.ballPostinion.y);
+  GameBall.drawBall(Board.ctx, getPaddleInformations());
 
-  const paddlesInformations: paddlesInformations = {
-    paddleWidth,
-    paddleHeight,
-    playerPaddlePossition: [30, playerPaddle.paddleY],
-    aiPaddlePossition: [Board.canvas.width - 30, BotPaddle.paddleY],
-  };
-
-  GameBall.drawBall(Board.ctx, paddlesInformations);
+  const score = GameBall.checkScore();
+  if (score) console.log(score);
 
   requestAnimationFrame(animate);
 };

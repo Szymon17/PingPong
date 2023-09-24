@@ -1,8 +1,13 @@
+type Coordinates = {
+  x: number;
+  y: number;
+};
+
 type paddlesInformations = {
   paddleWidth: number;
   paddleHeight: number;
-  playerPaddlePossition: number[];
-  aiPaddlePossition: number[];
+  playerPaddlePossition: Coordinates;
+  aiPaddlePossition: Coordinates;
 };
 
-export { paddlesInformations };
+export { paddlesInformations, Coordinates };
