@@ -11,12 +11,16 @@ export default class UserPaddle {
     this.paddleY = null;
   }
 
-  drawPaddle(ctx: CanvasRenderingContext2D, y: number) {
+  draw(ctx: CanvasRenderingContext2D, y: number) {
     ctx.fillStyle = "white";
 
     if (y > this.canvas.height - this.paddleHeight) y = this.canvas.height - this.paddleHeight;
     this.paddleY = y;
 
     ctx.fillRect(0 + 30, y, this.paddleWidth, this.paddleHeight);
+  }
+
+  reset() {
+    this.paddleY = this.canvas.height / 2 - this.paddleHeight / 2;
   }
 }

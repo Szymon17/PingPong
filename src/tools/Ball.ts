@@ -14,17 +14,17 @@ export default class Ball {
   constructor(canvas: HTMLCanvasElement, ballSize: number) {
     this.canvas = canvas;
     this.ballSize = ballSize;
-    this.ballSpeed = { x: 7, y: 0 };
     this.ballMaxSpeed = 12;
     this.ballDirection = -1;
     this.ballPostinion = { x: canvas.width / 2, y: canvas.height / 2 };
+    this.ballSpeed = { x: 7, y: 0 };
     this.score = false;
   }
 
-  drawBall(ctx: CanvasRenderingContext2D, paddlesInformations: paddlesInformations) {
-    ctx.fillStyle = "white";
-
+  draw(ctx: CanvasRenderingContext2D, paddlesInformations: paddlesInformations) {
     this.changeBallPosition(paddlesInformations);
+
+    ctx.fillStyle = "white";
 
     ctx.beginPath();
     ctx.arc(this.ballPostinion.x, this.ballPostinion.y, 10, Math.PI * 2, 0);
@@ -50,7 +50,7 @@ export default class Ball {
   private checkBallBounce(paddlesInformations: paddlesInformations) {
     const { playerPaddlePossition, aiPaddlePossition, paddleHeight, paddleWidth } = paddlesInformations;
 
-    if (this.ballPostinion.x <= playerPaddlePossition.x + paddleWidth && this.ballPostinion.x > 0) {
+    if (this.ballPostinion.x <= playerPaddlePossition.x + paddleWidth + this.ballSize && this.ballPostinion.x > 0) {
       if (this.ballPostinion.y >= playerPaddlePossition.y && this.ballPostinion.y <= playerPaddlePossition.y + paddleHeight) {
         const hitPlace = this.ballPostinion.y - playerPaddlePossition.y;
         this.addBallSpeed(paddleHeight, hitPlace);
@@ -82,8 +82,14 @@ export default class Ball {
   }
 
   checkScore(): score {
-    if (this.ballPostinion.x < 0) return "ai";
-    else if (this.ballPostinion.x > this.canvas.width) return "player";
+    if (this.ballPostinion.x + this.ballSize < 0) return "ai";
+    else if (this.ballPostinion.x + this.ballSize > this.canvas.width) return "player";
     else return false;
+  }
+
+  reset() {
+    this.ballPostinion = { x: this.canvas.width / 2, y: this.canvas.height / 2 };
+    this.ballSpeed = { x: 7, y: 0 };
+    this.score = false;
   }
 }
