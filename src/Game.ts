@@ -1,8 +1,8 @@
-import { paddlesInformations } from "./types";
-import GameBoard from "./tools/GameBoard";
+import { paddlesInformations, settings } from "./types";
 import UserPaddle from "./tools/UserPaddle";
 import AiPaddle from "./tools/AiPaddle";
 import Ball from "./tools/Ball";
+import ScoreCounter from "./tools/ScoreCounter";
 
 export default class Game {
   shouldAnimate: boolean;
@@ -10,23 +10,33 @@ export default class Game {
   paddleHeight: number;
   ballSize: number;
 
-  Board: GameBoard;
+  canvas: HTMLCanvasElement;
+  ctx: CanvasRenderingContext2D;
+  cursorY: number;
+
   PlayerPaddle: UserPaddle;
   BotPaddle: AiPaddle;
   GameBall: Ball;
+  PlayerScoreCounter: ScoreCounter;
+  AiScoreCounter: ScoreCounter;
 
-  constructor() {
+  constructor(settings: settings) {
     this.shouldAnimate = false;
     this.paddleWidth = 10;
     this.paddleHeight = window.innerHeight / 10;
     this.ballSize = 10;
 
-    this.Board = new GameBoard(window.innerWidth, window.innerHeight);
-    this.PlayerPaddle = new UserPaddle(this.Board.canvas, this.paddleWidth, this.paddleHeight);
-    this.BotPaddle = new AiPaddle(this.Board.canvas, this.paddleWidth, this.paddleHeight, 10);
-    this.GameBall = new Ball(this.Board.canvas, this.ballSize);
+    this.canvas = null;
+    this.ctx = null;
+    this.cursorY = null;
 
-    this.Board.initCanvas();
+    this.initCanvas(window.innerWidth, window.innerHeight);
+
+    this.PlayerPaddle = new UserPaddle(this.canvas, this.paddleWidth, this.paddleHeight);
+    this.BotPaddle = new AiPaddle(this.canvas, this.paddleWidth, this.paddleHeight, settings.aiSpeed);
+    this.GameBall = new Ball(this.canvas, this.ballSize, settings.ballSpeed);
+    this.PlayerScoreCounter = new ScoreCounter(this.canvas.width / 2 - 70);
+    this.AiScoreCounter = new ScoreCounter(this.canvas.width / 2 + 70);
   }
 
   startGame() {
@@ -42,18 +52,20 @@ export default class Game {
 
   stopGame() {
     this.shouldAnimate = false;
-
+    this.AiScoreCounter.reset();
+    this.PlayerScoreCounter.reset();
     this.resetGame();
   }
 
   private generateFrame() {
-    this.Board.renderCanvas();
-    this.PlayerPaddle.draw(this.Board.ctx, this.Board.cursorY);
-    this.BotPaddle.draw(this.Board.ctx, this.GameBall.ballPostinion.y);
-    this.GameBall.draw(this.Board.ctx, this.getPaddleInformations());
+    this.renderGame();
 
     const score = this.GameBall.checkScore();
-    if (score) this.resetGame();
+
+    if (score) {
+      score === "player" ? this.PlayerScoreCounter.addPoint() : this.AiScoreCounter.addPoint();
+      this.resetGame();
+    }
 
     if (this.shouldAnimate) requestAnimationFrame(this.generateFrame.bind(this));
   }
@@ -63,7 +75,50 @@ export default class Game {
       paddleWidth: this.paddleWidth,
       paddleHeight: this.paddleHeight,
       playerPaddlePossition: { x: 30, y: this.PlayerPaddle.paddleY },
-      aiPaddlePossition: { x: this.Board.canvas.width - 30, y: this.BotPaddle.paddleY },
+      aiPaddlePossition: { x: this.canvas.width - 30, y: this.BotPaddle.paddleY },
     };
+  }
+
+  private renderGame() {
+    this.renderBoard();
+    this.PlayerPaddle.draw(this.ctx, this.cursorY);
+    this.BotPaddle.draw(this.ctx, this.GameBall.ballPostinion.y, this.GameBall.ballDirection);
+    this.GameBall.draw(this.ctx, this.getPaddleInformations());
+    this.PlayerScoreCounter.draw(this.ctx);
+    this.AiScoreCounter.draw(this.ctx);
+  }
+
+  private renderBoard() {
+    this.ctx.fillStyle = "black";
+
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+    this.ctx.strokeStyle = "white";
+
+    this.ctx.beginPath();
+    this.ctx.setLineDash([10]);
+    this.ctx.moveTo(this.canvas.width / 2, 0);
+    this.ctx.lineTo(this.canvas.width / 2, this.canvas.height);
+    this.ctx.stroke();
+  }
+
+  private initCanvas(width: number, height: number) {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    this.ctx = ctx;
+    this.canvas = canvas;
+
+    canvas.width = width;
+    canvas.height = height;
+
+    canvas.addEventListener("mousemove", e => {
+      this.cursorY = e.clientY;
+    });
+
+    document.body.innerHTML = "";
+    document.body.appendChild(this.canvas);
+
+    this.renderBoard();
   }
 }

@@ -10,4 +10,16 @@ type paddlesInformations = {
   aiPaddlePossition: Coordinates;
 };
 
-export { paddlesInformations, Coordinates };
+type minMaxSpeed = {
+  min: number;
+  max: number;
+};
+
+type settings = {
+  aiSpeed: number;
+  ballSpeed: minMaxSpeed;
+};
+
+type ballDirection = 1 | -1;
+
+export { paddlesInformations, Coordinates, settings, minMaxSpeed, ballDirection };

@@ -1,4 +1,4 @@
-import { Coordinates, paddlesInformations } from "../types";
+import { Coordinates, minMaxSpeed, paddlesInformations } from "../types";
 
 type score = false | "player" | "ai";
 
@@ -6,18 +6,20 @@ export default class Ball {
   canvas: HTMLCanvasElement;
   ballSize: number;
   ballSpeed: Coordinates;
+  ballMinSpeed: number;
   ballMaxSpeed: number;
   ballDirection: -1 | 1;
   ballPostinion: Coordinates;
   score: score;
 
-  constructor(canvas: HTMLCanvasElement, ballSize: number) {
+  constructor(canvas: HTMLCanvasElement, ballSize: number, ballSpeed: minMaxSpeed) {
     this.canvas = canvas;
     this.ballSize = ballSize;
-    this.ballMaxSpeed = 12;
+    this.ballMinSpeed = ballSpeed.min;
+    this.ballMaxSpeed = ballSpeed.max;
     this.ballDirection = -1;
     this.ballPostinion = { x: canvas.width / 2, y: canvas.height / 2 };
-    this.ballSpeed = { x: 7, y: 0 };
+    this.ballSpeed = { x: ballSpeed.min, y: 0 };
     this.score = false;
   }
 
@@ -71,10 +73,10 @@ export default class Ball {
     const xSpeed = (paddleHeight / 2 - hitPlace) / 3;
     const ySpeed = ((paddleHeight / 2 - hitPlace) / 5) * -1;
 
-    if (xSpeed > 5 && xSpeed < this.ballMaxSpeed) this.ballSpeed.x = xSpeed;
-    else if (xSpeed < -5 && xSpeed > -this.ballMaxSpeed) this.ballSpeed.x = xSpeed * -1;
+    if (xSpeed > this.ballMinSpeed && xSpeed < this.ballMaxSpeed) this.ballSpeed.x = xSpeed;
+    else if (xSpeed < -this.ballMinSpeed && xSpeed > -this.ballMaxSpeed) this.ballSpeed.x = xSpeed * -1;
     else if (xSpeed > this.ballMaxSpeed || xSpeed < -this.ballMaxSpeed) this.ballSpeed.x = this.ballMaxSpeed;
-    else this.ballSpeed.x = 7;
+    else this.ballSpeed.x = this.ballMinSpeed;
 
     if (ySpeed >= this.ballMaxSpeed / 1.5) this.ballSpeed.y = this.ballMaxSpeed / 1.5;
     else if (ySpeed < -this.ballMaxSpeed / 1.5) this.ballSpeed.y = (this.ballMaxSpeed / 1.5) * -1;
