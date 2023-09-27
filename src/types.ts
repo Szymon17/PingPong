@@ -22,4 +22,6 @@ type settings = {
 
 type ballDirection = 1 | -1;
 
-export { paddlesInformations, Coordinates, settings, minMaxSpeed, ballDirection };
+type score = false | "player" | "ai";
+
+export { paddlesInformations, Coordinates, settings, minMaxSpeed, ballDirection, score };

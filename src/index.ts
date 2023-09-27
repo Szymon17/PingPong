@@ -1,8 +1,10 @@
-import { settings } from "./types";
 import "./styles.css";
+import { settings } from "./types";
 import Game from "./Game";
 
 let PingPong: Game | null = null;
+
+const normalBallSpeed = window.innerWidth / 300 + 5;
 
 const createButton = (name: string, settings: settings): HTMLButtonElement => {
   const button = document.createElement("button");
@@ -20,9 +22,9 @@ const createButton = (name: string, settings: settings): HTMLButtonElement => {
 };
 
 const modes = [
-  createButton("Easy", { ballSpeed: { min: 7, max: 11 }, aiSpeed: 5.5 }),
-  createButton("Medium", { ballSpeed: { min: 12, max: 15 }, aiSpeed: 7 }),
-  createButton("Hard", { ballSpeed: { min: 15, max: 20 }, aiSpeed: 8 }),
+  createButton("Easy", { ballSpeed: { min: normalBallSpeed * 0.6, max: normalBallSpeed * 0.8 }, aiSpeed: normalBallSpeed * 0.45 }),
+  createButton("Medium", { ballSpeed: { min: normalBallSpeed * 1.2, max: normalBallSpeed * 1.5 }, aiSpeed: normalBallSpeed * 0.7 }),
+  createButton("Hard", { ballSpeed: { min: normalBallSpeed * 1.4, max: normalBallSpeed * 1.7 }, aiSpeed: normalBallSpeed * 0.8 }),
 ];
 
 const menu = document.createElement("div");

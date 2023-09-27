@@ -1,6 +1,4 @@
-import { Coordinates, minMaxSpeed, paddlesInformations } from "../types";
-
-type score = false | "player" | "ai";
+import { Coordinates, minMaxSpeed, paddlesInformations, score } from "../types";
 
 export default class Ball {
   canvas: HTMLCanvasElement;

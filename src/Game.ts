@@ -1,8 +1,9 @@
-import { paddlesInformations, settings } from "./types";
+import { paddlesInformations, score, settings } from "./types";
 import UserPaddle from "./tools/UserPaddle";
 import AiPaddle from "./tools/AiPaddle";
 import Ball from "./tools/Ball";
 import ScoreCounter from "./tools/ScoreCounter";
+import Counter from "./tools/Counter";
 
 export default class Game {
   shouldAnimate: boolean;
@@ -19,6 +20,7 @@ export default class Game {
   GameBall: Ball;
   PlayerScoreCounter: ScoreCounter;
   AiScoreCounter: ScoreCounter;
+  TimeCounter: Counter;
 
   constructor(settings: settings) {
     this.shouldAnimate = false;
@@ -37,6 +39,7 @@ export default class Game {
     this.GameBall = new Ball(this.canvas, this.ballSize, settings.ballSpeed);
     this.PlayerScoreCounter = new ScoreCounter(this.canvas.width / 2 - 70);
     this.AiScoreCounter = new ScoreCounter(this.canvas.width / 2 + 70);
+    this.TimeCounter = new Counter();
   }
 
   startGame() {
@@ -45,9 +48,16 @@ export default class Game {
   }
 
   resetGame() {
+    this.shouldAnimate = false;
     this.PlayerPaddle.reset();
     this.BotPaddle.reset();
     this.GameBall.reset();
+
+    setTimeout(() => this.startGame(), 100);
+  }
+
+  pauseGame() {
+    this.shouldAnimate = false;
   }
 
   stopGame() {
@@ -59,15 +69,23 @@ export default class Game {
 
   private generateFrame() {
     this.renderGame();
+    this.tryRegisterPoint();
 
+    if (this.shouldAnimate) requestAnimationFrame(this.generateFrame.bind(this));
+  }
+
+  private async tryRegisterPoint() {
     const score = this.GameBall.checkScore();
 
     if (score) {
+      this.pauseGame();
       score === "player" ? this.PlayerScoreCounter.addPoint() : this.AiScoreCounter.addPoint();
-      this.resetGame();
-    }
 
-    if (this.shouldAnimate) requestAnimationFrame(this.generateFrame.bind(this));
+      this.renderGame();
+      const counted = await this.TimeCounter.countAfterScore(3);
+
+      if (counted) this.resetGame();
+    }
   }
 
   private getPaddleInformations(): paddlesInformations {

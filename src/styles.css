@@ -2,9 +2,6 @@ body {
   margin: 0;
   overflow: hidden;
   background-color: black;
-}
-
-.canvas {
   cursor: none;
 }
 
@@ -15,6 +12,7 @@ body {
   width: 100vw;
   height: 100vh;
   backdrop-filter: blur(2px);
+  cursor: default;
 }
 
 .buttons__container {
@@ -31,4 +29,44 @@ body {
   cursor: pointer;
   width: 300px;
   height: 50px;
+  border: none;
+  outline: none;
+  font-weight: 600;
+  border-radius: 5px;
+  transition: all 0.5s;
+}
+
+.mode__button:hover {
+  box-shadow: inset 1px 1px 10px -1px rgb(0, 0, 0);
+}
+
+.mode__button.easy {
+  color: white;
+  background-color: green;
+}
+
+.mode__button.medium {
+  background-color: yellow;
+}
+
+.mode__button.hard {
+  background-color: orange;
+}
+
+.counter {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  left: 0;
+  top: 0;
+  backdrop-filter: blur(3px);
+}
+
+.counterValue {
+  font-size: 50px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
 }
