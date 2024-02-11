@@ -7,7 +7,6 @@ type paddlesInformations = {
   paddleWidth: number;
   paddleHeight: number;
   playerPaddlePossition: Coordinates;
-  aiPaddlePossition: Coordinates;
 };
 
 type minMaxSpeed = {

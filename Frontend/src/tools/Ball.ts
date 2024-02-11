@@ -48,7 +48,7 @@ export default class Ball {
   }
 
   private checkBallBounce(paddlesInformations: paddlesInformations) {
-    const { playerPaddlePossition, aiPaddlePossition, paddleHeight, paddleWidth } = paddlesInformations;
+    const { playerPaddlePossition, paddleHeight, paddleWidth } = paddlesInformations;
 
     if (this.ballPostinion.x <= playerPaddlePossition.x + paddleWidth + this.ballSize && this.ballPostinion.x > 0) {
       if (this.ballPostinion.y >= playerPaddlePossition.y && this.ballPostinion.y <= playerPaddlePossition.y + paddleHeight) {
@@ -56,13 +56,14 @@ export default class Ball {
         this.addBallSpeed(paddleHeight, hitPlace);
         this.ballDirection = 1;
       }
-    } else if (this.ballPostinion.x >= aiPaddlePossition.x - paddleWidth && this.ballPostinion.x < this.canvas.width) {
-      if (this.ballPostinion.y >= aiPaddlePossition.y && this.ballPostinion.y <= aiPaddlePossition.y + paddleHeight) {
-        const hitPlace = this.ballPostinion.y - playerPaddlePossition.y;
-        this.addBallSpeed(paddleHeight, hitPlace * -1);
-        this.ballDirection = -1;
-      }
     }
+    // else if (this.ballPostinion.x >= aiPaddlePossition.x - paddleWidth && this.ballPostinion.x < this.canvas.width) {
+    //   if (this.ballPostinion.y >= aiPaddlePossition.y && this.ballPostinion.y <= aiPaddlePossition.y + paddleHeight) {
+    //     const hitPlace = this.ballPostinion.y - playerPaddlePossition.y;
+    //     this.addBallSpeed(paddleHeight, hitPlace * -1);
+    //     this.ballDirection = -1;
+    //   }
+    // }
 
     if (this.ballPostinion.y >= this.canvas.height || this.ballPostinion.y <= 0) this.ballSpeed.y *= -1;
   }

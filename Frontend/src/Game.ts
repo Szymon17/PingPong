@@ -1,6 +1,5 @@
-import { paddlesInformations, score, settings } from "./types";
-import UserPaddle from "./tools/UserPaddle";
-import AiPaddle from "./tools/AiPaddle";
+import { minMaxSpeed, paddlesInformations, score, settings } from "./types";
+import UserPaddle from "./tools/PlayerPaddle";
 import Ball from "./tools/Ball";
 import ScoreCounter from "./tools/ScoreCounter";
 import Counter from "./tools/Counter";
@@ -16,13 +15,12 @@ export default class Game {
   cursorY: number;
 
   PlayerPaddle: UserPaddle;
-  BotPaddle: AiPaddle;
   GameBall: Ball;
   PlayerScoreCounter: ScoreCounter;
   AiScoreCounter: ScoreCounter;
   TimeCounter: Counter;
 
-  constructor(settings: settings) {
+  constructor(ballSpeed: minMaxSpeed) {
     this.shouldAnimate = false;
     this.paddleWidth = 10;
     this.paddleHeight = window.innerHeight / 10;
@@ -35,8 +33,7 @@ export default class Game {
     this.initCanvas(window.innerWidth, window.innerHeight);
 
     this.PlayerPaddle = new UserPaddle(this.canvas, this.paddleWidth, this.paddleHeight);
-    this.BotPaddle = new AiPaddle(this.canvas, this.paddleWidth, this.paddleHeight, settings.aiSpeed);
-    this.GameBall = new Ball(this.canvas, this.ballSize, settings.ballSpeed);
+    this.GameBall = new Ball(this.canvas, this.ballSize, ballSpeed);
     this.PlayerScoreCounter = new ScoreCounter(this.canvas.width / 2 - 70);
     this.AiScoreCounter = new ScoreCounter(this.canvas.width / 2 + 70);
     this.TimeCounter = new Counter();
@@ -50,7 +47,6 @@ export default class Game {
   resetGame() {
     this.shouldAnimate = false;
     this.PlayerPaddle.reset();
-    this.BotPaddle.reset();
     this.GameBall.reset();
 
     setTimeout(() => this.startGame(), 100);
@@ -93,14 +89,12 @@ export default class Game {
       paddleWidth: this.paddleWidth,
       paddleHeight: this.paddleHeight,
       playerPaddlePossition: { x: 30, y: this.PlayerPaddle.paddleY },
-      aiPaddlePossition: { x: this.canvas.width - 30, y: this.BotPaddle.paddleY },
     };
   }
 
   private renderGame() {
     this.renderBoard();
     this.PlayerPaddle.draw(this.ctx, this.cursorY);
-    this.BotPaddle.draw(this.ctx, this.GameBall.ballPostinion.y, this.GameBall.ballDirection);
     this.GameBall.draw(this.ctx, this.getPaddleInformations());
     this.PlayerScoreCounter.draw(this.ctx);
     this.AiScoreCounter.draw(this.ctx);
